@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners -->
+  <meta name="description" content="DESCRIPTION META TAG">
+  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+  <meta property="og:url" content="URL OF THE WEBSITE"/>
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Self-Prompting Diffusion Transformer for Open-Vocabulary Scene Text Editing via In-Context Learning</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <!-- More Qualitative Results — 图片网格（与上方栏目同属 section hero is-light） -->
+  <style>
+    .more-qualitative-results .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+    .more-qualitative-results .result-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .more-qualitative-results .result-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    .more-qualitative-results .result-item img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+    .more-qualitative-results .result-caption {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: #555;
+      text-align: center;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      .more-qualitative-results .results-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* 与上方 Multilingual / Ablation 等一致；相邻两节之间用浅色线区分 */
+    .failure-cases.section {
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .multilingual-results .multilingual-results-table,
+    .ablation-results .ablation-results-table {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    .multilingual-results .multilingual-results-figure,
+    .ablation-results .ablation-results-figure {
+      width: 100%;
+      max-width: 82%;
+      height: auto;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 768px) {
+      .multilingual-results .multilingual-results-figure,
+      .ablation-results .ablation-results-figure {
+        max-width: 100%;
+      }
+    }
+
+    .multilingual-results .multilingual-results-columns,
+    .ablation-results .ablation-results-columns {
+      justify-content: center;
+    }
+
+    /* Long Text Edit — horizontal slide carousel (buttons always) */
+    .long-text-edit-section {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+    .long-text-edit-section .longtext-carousel {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+    }
+    .long-text-edit-section .longtext-carousel:last-child {
+      margin-bottom: 0;
+    }
+    .long-text-edit-section .longtext-carousel-viewport {
+      overflow: hidden;
+      border-radius: 8px;
+      width: 100%;
+      position: relative;
+    }
+    .long-text-edit-section .longtext-carousel-track {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      gap: 14px;
+      transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+      will-change: transform;
+    }
+    .long-text-edit-section .longtext-panel {
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .long-text-edit-section .longtext-panel.is-active {
+      z-index: 2;
+    }
+    .long-text-edit-section .longtext-panel-img-wrap {
+      flex: 0 0 auto;
+      width: 100%;
+      height: clamp(200px, 40vw, 420px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: filter 0.45s ease, opacity 0.45s ease, transform 0.45s ease;
+    }
+    .long-text-edit-section .longtext-panel:not(.is-active) .longtext-panel-img-wrap {
+      filter: blur(7px);
+      opacity: 0.5;
+      transform: scale(0.94);
+      pointer-events: none;
+    }
+    .long-text-edit-section .longtext-panel.is-active .longtext-panel-img-wrap {
+      filter: none;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .long-text-edit-section .longtext-panel-img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      border-radius: 4px;
+      border: 1px solid #eee;
+      transition: box-shadow 0.35s ease;
+    }
+    .long-text-edit-section .longtext-panel.is-active .longtext-panel-img-wrap img {
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+    }
+    .long-text-edit-section .longtext-panel-caption {
+      margin-top: 0.65rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #444;
+      font-weight: 500;
+      line-height: 1.3;
+      flex-shrink: 0;
+    }
+    .long-text-edit-section .longtext-panel:not(.is-active) .longtext-panel-caption {
+      opacity: 0.55;
+    }
+    .long-text-edit-section .longtext-panel.is-active .longtext-panel-caption {
+      opacity: 1;
+    }
+    .long-text-edit-section .longtext-carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .long-text-edit-section .longtext-carousel-nav button.longtext-carousel-prev,
+    .long-text-edit-section .longtext-carousel-nav button.longtext-carousel-next {
+      border: 1px solid #ddd;
+      background: #fff;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #333;
+    }
+    .long-text-edit-section .longtext-carousel-nav button.longtext-carousel-prev:hover,
+    .long-text-edit-section .longtext-carousel-nav button.longtext-carousel-next:hover {
+      background: #f0f0f0;
+    }
+    .long-text-edit-section .longtext-carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .long-text-edit-section .longtext-carousel-dots button {
+      width: 0.5rem;
+      height: 0.5rem;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      background: #ccc;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .long-text-edit-section .longtext-carousel-dots button.is-active {
+      background: #333;
+      transform: scale(1.15);
+    }
+
+    /* Out-of-vocabulary (OOV) */
+    .oov-section .oov-row {
+      margin-top: 2rem;
+    }
+    .oov-section .oov-input-block,
+    .oov-section .oov-carousel {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      height: 100%;
+    }
+    .oov-section .oov-input-img-wrap,
+    .oov-section .oov-slide-img-wrap {
+      flex: 0 0 auto;
+      width: 100%;
+      height: clamp(200px, 34vw, 380px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .oov-section .oov-input-img-wrap img,
+    .oov-section .oov-slide-img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+    .oov-section .oov-input-caption,
+    .oov-section .oov-carousel-label {
+      margin-top: 0.65rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #444;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .oov-section .oov-carousel-viewport {
+      overflow: hidden;
+      border-radius: 8px;
+      width: 100%;
+      position: relative;
+    }
+    .oov-section .oov-carousel-track {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    .oov-section .oov-slide {
+      flex-shrink: 0;
+      box-sizing: border-box;
+      margin: 0;
+    }
+    .oov-section .oov-carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+    .oov-section .oov-carousel-nav button.oov-carousel-prev,
+    .oov-section .oov-carousel-nav button.oov-carousel-next {
+      border: 1px solid #ddd;
+      background: #fff;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #333;
+    }
+    .oov-section .oov-carousel-nav button.oov-carousel-prev:hover,
+    .oov-section .oov-carousel-nav button.oov-carousel-next:hover {
+      background: #f0f0f0;
+    }
+    .oov-section .oov-carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .oov-section .oov-carousel-dots button {
+      width: 0.5rem;
+      height: 0.5rem;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      background: #ccc;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .oov-section .oov-carousel-dots button.is-active {
+      background: #333;
+      transform: scale(1.15);
+    }
+    @media (max-width: 768px) {
+      .oov-section .oov-input-img-wrap,
+      .oov-section .oov-slide-img-wrap {
+        height: clamp(180px, 52vw, 320px);
+      }
+    }
+  </style>
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+
+<body>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Self-Prompting Diffusion Transformer for Open-Vocabulary Scene Text Editing via In-Context Learning
+          </h1>
+          <div class="is-size-5 publication-authors has-text-centered">
+            <span class="author-block">Anonymous Authors</span>
+          </div>
+          <!-- Paper button (non-clickable) -->
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <span class="button is-normal is-rounded is-dark is-static">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LONG TEXT EDIT EXAMPLE ===================== -->
+<section class="section hero is-light long-text-edit-section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Long Text Edit Example</h2>
+
+    <div class="longtext-carousel" data-longtext-carousel style="margin-top: 2rem;">
+      <div class="longtext-carousel-viewport">
+        <div class="longtext-carousel-track">
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_A_en.png" alt="Long text edit example A — English">
+            </div>
+            <figcaption class="longtext-panel-caption">english text</figcaption>
+          </figure>
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_A.png" alt="Long text edit example A — input image">
+            </div>
+            <figcaption class="longtext-panel-caption">input image</figcaption>
+          </figure>
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_A_zh.png" alt="Long text edit example A — Chinese">
+            </div>
+            <figcaption class="longtext-panel-caption">chinese text</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="longtext-carousel-nav">
+        <button type="button" class="longtext-carousel-prev" aria-label="Previous slide">‹</button>
+        <div class="longtext-carousel-dots"></div>
+        <button type="button" class="longtext-carousel-next" aria-label="Next slide">›</button>
+      </div>
+    </div>
+
+    <div class="longtext-carousel" data-longtext-carousel>
+      <div class="longtext-carousel-viewport">
+        <div class="longtext-carousel-track">
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_B_en.png" alt="Long text edit example — English">
+            </div>
+            <figcaption class="longtext-panel-caption">english text</figcaption>
+          </figure>
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_B.png" alt="Long text edit example — input image">
+            </div>
+            <figcaption class="longtext-panel-caption">input image</figcaption>
+          </figure>
+          <figure class="longtext-panel">
+            <div class="longtext-panel-img-wrap">
+              <img src="static/images/sample_B_zh.png" alt="Long text edit example — Chinese">
+            </div>
+            <figcaption class="longtext-panel-caption">chinese text</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="longtext-carousel-nav">
+        <button type="button" class="longtext-carousel-prev" aria-label="Previous slide">‹</button>
+        <div class="longtext-carousel-dots"></div>
+        <button type="button" class="longtext-carousel-next" aria-label="Next slide">›</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OUT-OF-VOCABULARY (OOV) ===================== -->
+<section class="section hero is-light oov-section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Out-of-vocabulary (OOV) Instances</h2>
+    <div class="columns is-variable is-6 is-vcentered oov-row">
+      <div class="column is-half">
+        <div class="oov-input-block">
+          <div class="oov-input-img-wrap">
+            <img src="static/images/oov_input.jpg" alt="OOV input image">
+          </div>
+          <p class="oov-input-caption">input image</p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div
+          class="oov-carousel"
+          data-oov-carousel
+          data-oov-manifest="static/images/oov/manifest.json"
+          data-oov-base="static/images/"
+        >
+          <div class="oov-carousel-viewport">
+            <div class="oov-carousel-track"></div>
+          </div>
+          <div class="oov-carousel-nav">
+            <button type="button" class="oov-carousel-prev" aria-label="Previous slide">‹</button>
+            <div class="oov-carousel-dots"></div>
+            <button type="button" class="oov-carousel-next" aria-label="Next slide">›</button>
+          </div>
+          <p class="oov-carousel-label" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STROKE-LEVEL FEATURE LEARNING ===================== -->
+<section class="section hero is-light oov-section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Stroke-level Feature Learning</h2>
+    <div class="columns is-variable is-6 is-vcentered oov-row">
+      <div class="column is-half">
+        <div class="oov-input-block">
+          <div class="oov-input-img-wrap">
+            <img src="static/images/stroke_input.png" alt="Stroke feature learning input">
+          </div>
+          <p class="oov-input-caption">input image</p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div
+          class="oov-carousel"
+          data-stroke-carousel
+          data-stroke-manifest="static/images/stroke_manifest.json"
+          data-stroke-base="static/images/"
+        >
+          <div class="oov-carousel-viewport">
+            <div class="oov-carousel-track"></div>
+          </div>
+          <div class="oov-carousel-nav">
+            <button type="button" class="oov-carousel-prev" aria-label="Previous slide">‹</button>
+            <div class="oov-carousel-dots"></div>
+            <button type="button" class="oov-carousel-next" aria-label="Next slide">›</button>
+          </div>
+          <p class="oov-carousel-label" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MULTILINGUAL RESULTS ===================== -->
+<section class="section hero is-light multilingual-results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Multilingual Results</h2>
+    <div class="columns multilingual-results-columns is-variable is-6 is-vcentered is-centered" style="margin-top: 2rem;">
+      <div class="column is-9">
+        <img class="multilingual-results-table" src="static/images/mstedit_result_table.png" alt="Multilingual quantitative results table">
+      </div>
+      <div class="column is-5">
+        <img class="multilingual-results-figure" src="static/images/mstedit_result_figure.png" alt="Multilingual qualitative results figure">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ABLATION RESULTS ===================== -->
+<section class="section hero is-light ablation-results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Ablation Results</h2>
+    <div class="columns ablation-results-columns is-variable is-6 is-vcentered is-centered" style="margin-top: 2rem;">
+      <div class="column is-10">
+        <img class="ablation-results-table" src="static/images/ablation_table.png" alt="Ablation study quantitative table">
+      </div>
+      <div class="column is-5">
+        <img class="ablation-results-figure" src="static/images/ablation_figure.png" alt="Ablation study qualitative figure">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MORE QUALITATIVE RESULTS (MOVED TO BOTTOM) ===================== -->
+<section class="section hero is-light more-qualitative-results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">More Qualitative Results</h2>
+    <div class="results-grid">
+      
+      <!-- Item 1 -->
+      <div class="result-item">
+        <img src="static/images/ja.png" alt="Japanese result">
+      </div>
+
+      <!-- Item 2 -->
+      <div class="result-item">
+        <img src="static/images/ko.png" alt="Korean result">
+      </div>
+
+      <!-- Item 3 -->
+      <div class="result-item">
+        <img src="static/images/ru.png" alt="Russian result">
+      </div>
+
+      <!-- Item 4 -->
+      <div class="result-item">
+        <img src="static/images/zh.png" alt="Chinese result">
+      </div>
+
+      <!-- Item 5 -->
+      <div class="result-item">
+        <img src="static/images/en.png" alt="English result">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAILURE CASES ===================== -->
+<section class="section hero is-light failure-cases">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Failure cases</h2>
+    <div class="long-text-edit-section" style="padding-top: 1rem; padding-bottom: 0;">
+
+      <h3 class="title is-4 has-text-centered">Multi-line text editing</h3>
+      <div class="longtext-carousel" data-longtext-carousel style="margin-top: 1.25rem;">
+        <div class="longtext-carousel-viewport">
+          <div class="longtext-carousel-track">
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q1_1.png" alt="Multi-line text editing — 1">
+              </div>
+              <figcaption class="longtext-panel-caption">“全新升级”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q1_2.png" alt="Multi-line text editing — 2">
+              </div>
+              <figcaption class="longtext-panel-caption">“猫咪吃了更健康”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q1_3.png" alt="Multi-line text editing — 3">
+              </div>
+              <figcaption class="longtext-panel-caption">“今晚”</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="longtext-carousel-nav">
+          <button type="button" class="longtext-carousel-prev" aria-label="Previous slide">‹</button>
+          <div class="longtext-carousel-dots"></div>
+          <button type="button" class="longtext-carousel-next" aria-label="Next slide">›</button>
+        </div>
+      </div>
+
+      <h3 class="title is-4 has-text-centered mt-6">Many-to-few character editing</h3>
+      <div class="longtext-carousel" data-longtext-carousel style="margin-top: 1.25rem;">
+        <div class="longtext-carousel-viewport">
+          <div class="longtext-carousel-track">
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q2_1.png" alt="Many-to-few character editing — 1">
+              </div>
+              <figcaption class="longtext-panel-caption">“限时抢购中”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q2_2.png" alt="Many-to-few character editing — 2">
+              </div>
+              <figcaption class="longtext-panel-caption">“强劲！”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q2_3.png" alt="Many-to-few character editing — 3">
+              </div>
+              <figcaption class="longtext-panel-caption">“生日快乐”</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="longtext-carousel-nav">
+          <button type="button" class="longtext-carousel-prev" aria-label="Previous slide">‹</button>
+          <div class="longtext-carousel-dots"></div>
+          <button type="button" class="longtext-carousel-next" aria-label="Next slide">›</button>
+        </div>
+      </div>
+
+      <h3 class="title is-4 has-text-centered mt-6">Few-to-many character editing</h3>
+      <div class="longtext-carousel" data-longtext-carousel style="margin-top: 1.25rem;">
+        <div class="longtext-carousel-viewport">
+          <div class="longtext-carousel-track">
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q3_1.png" alt="Few-to-many character editing — 1">
+              </div>
+              <figcaption class="longtext-panel-caption">“BIRTHDAY”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q3_2.png" alt="Few-to-many character editing — 2">
+              </div>
+              <figcaption class="longtext-panel-caption">“今日限定八月限定”</figcaption>
+            </figure>
+            <figure class="longtext-panel">
+              <div class="longtext-panel-img-wrap">
+                <img src="static/images/q3_3.png" alt="Few-to-many character editing — 3">
+              </div>
+              <figcaption class="longtext-panel-caption">“UPF50+有效隔阻紫外线”</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="longtext-carousel-nav">
+          <button type="button" class="longtext-carousel-prev" aria-label="Previous slide">‹</button>
+          <div class="longtext-carousel-dots"></div>
+          <button type="button" class="longtext-carousel-next" aria-label="Next slide">›</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            <!-- This page was built using the
+            <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">
+              Academic Project Page Template
+            </a>. -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  function setupLongTextCarousel(root) {
+    var viewport = root.querySelector('.longtext-carousel-viewport');
+    var track = root.querySelector('.longtext-carousel-track');
+    var panels = root.querySelectorAll('.longtext-panel');
+    var prevBtn = root.querySelector('.longtext-carousel-prev');
+    var nextBtn = root.querySelector('.longtext-carousel-next');
+    var dotsWrap = root.querySelector('.longtext-carousel-dots');
+    if (!viewport || !track || !panels.length || !prevBtn || !nextBtn || !dotsWrap) return;
+
+    var n = panels.length;
+    var i = Math.min(1, n - 1);
+    /** 主图宽度占视口比例，两侧留出虚化预览 */
+    var SLIDE_RATIO = 0.72;
+    var GAP = 14;
+    var slideW = 0;
+
+    dotsWrap.innerHTML = '';
+    var dotEls = [];
+    for (var d = 0; d < n; d++) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Go to slide ' + (d + 1));
+      dotsWrap.appendChild(b);
+      dotEls.push(b);
+    }
+
+    function syncDots() {
+      for (var j = 0; j < dotEls.length; j++) {
+        dotEls[j].classList.toggle('is-active', j === i);
+      }
+    }
+
+    function syncActivePanel() {
+      for (var k = 0; k < panels.length; k++) {
+        panels[k].classList.toggle('is-active', k === i);
+      }
+    }
+
+    /** 主图宽度 < 视口，translate 使当前页居中，两侧露出邻页作虚化预览 */
+    function layout() {
+      var W = viewport.offsetWidth;
+      if (W <= 0) return;
+      slideW = Math.round(W * SLIDE_RATIO);
+      if (slideW < 1) return;
+      track.style.gap = GAP + 'px';
+      for (var p = 0; p < panels.length; p++) {
+        panels[p].style.flexBasis = slideW + 'px';
+        panels[p].style.width = slideW + 'px';
+        panels[p].style.minWidth = slideW + 'px';
+        panels[p].style.maxWidth = slideW + 'px';
+      }
+      applyTransform();
+    }
+
+    function applyTransform() {
+      var W = viewport.offsetWidth;
+      if (W <= 0 || slideW <= 0) return;
+      var t = (W - slideW) / 2 - i * (slideW + GAP);
+      track.style.transform = 'translateX(' + t + 'px)';
+      syncDots();
+      syncActivePanel();
+    }
+
+    function goTo(index) {
+      i = index;
+      applyTransform();
+    }
+
+    prevBtn.addEventListener('click', function () {
+      goTo((i - 1 + n) % n);
+    });
+    nextBtn.addEventListener('click', function () {
+      goTo((i + 1) % n);
+    });
+    dotEls.forEach(function (btn, idx) {
+      btn.addEventListener('click', function () {
+        goTo(idx);
+      });
+    });
+
+    window.addEventListener('resize', layout);
+    if (typeof ResizeObserver !== 'undefined') {
+      var ro = new ResizeObserver(function () {
+        layout();
+      });
+      ro.observe(viewport);
+    }
+    layout();
+  }
+
+  document.querySelectorAll('[data-longtext-carousel]').forEach(setupLongTextCarousel);
+
+  var DEFAULT_OOV_WEBPS = [
+    '< ↔ λ 丌 Ⅰ.webp',
+    '≦,≧,≮,≯,©.webp',
+    '俢 —— ▁ γ.webp',
+    '別圪擋紙擁.webp',
+    '旻貳陸橫卾.webp',
+    '淏茛鹮瀍獾.webp',
+    '熙涧拂晓畴.webp',
+    '燊圓頻頁繩.webp',
+    '睥鬆蕞襪効.webp',
+    '笪頸領哏炘.webp',
+    "雑綑篼浡涴.webp",
+    "醯鹼妠塱颏.webp",
+    "浀巓餗锖灜.webp",
+    "嫱茈涥瓏祤.webp",
+    "穢嘚翃翀翹.webp"
+  ];
+
+  /** 取 webp 文件名中第一个 ASCII 下划线前的部分作为前缀；无下划线则用去掉扩展名的整段主文件名 */
+  function oovPrefixFromFilename(name) {
+    var stem = String(name).replace(/\.webp$/i, '').split('/').pop();
+    var u = stem.indexOf('_');
+    return u >= 0 ? stem.slice(0, u) : stem;
+  }
+
+  /** 拼接 static 路径并对每段文件名 encodeURIComponent（支持空格、<、符号、中文等） */
+  function oovImageUrl(basePath, relativeName) {
+    var base = basePath.replace(/\/?$/, '/');
+    var rel = relativeName.replace(/^\/+/, '');
+    var encoded = rel.split('/').map(function (seg) {
+      return encodeURIComponent(seg);
+    }).join('/');
+    return base + encoded;
+  }
+
+  function setupOovCarousel(root) {
+    var viewport = root.querySelector('.oov-carousel-viewport');
+    var track = root.querySelector('.oov-carousel-track');
+    var prevBtn = root.querySelector('.oov-carousel-prev');
+    var nextBtn = root.querySelector('.oov-carousel-next');
+    var dotsWrap = root.querySelector('.oov-carousel-dots');
+    var label = root.querySelector('.oov-carousel-label');
+    if (!viewport || !track || !prevBtn || !nextBtn || !dotsWrap || !label) return;
+
+    var manifestUrl = root.getAttribute('data-oov-manifest') || 'static/images/oov/manifest.json';
+    var base = (root.getAttribute('data-oov-base') || 'static/images/').replace(/\/?$/, '/') ;
+
+    function buildSlides(files) {
+      track.innerHTML = '';
+      var names = files.filter(function (f) {
+        return typeof f === 'string' && /\.webp$/i.test(f.trim());
+      });
+      var prefixes = [];
+      names.forEach(function (name) {
+        name = name.trim();
+        var slide = document.createElement('div');
+        slide.className = 'oov-slide';
+        var wrap = document.createElement('div');
+        wrap.className = 'oov-slide-img-wrap';
+        var img = document.createElement('img');
+        img.src = oovImageUrl(base, name);
+        img.alt = '';
+        wrap.appendChild(img);
+        slide.appendChild(wrap);
+        track.appendChild(slide);
+        prefixes.push(oovPrefixFromFilename(name));
+      });
+      return prefixes;
+    }
+
+    function runBindings(prefixes) {
+      var slides = track.querySelectorAll('.oov-slide');
+      var n = slides.length;
+      if (!n) {
+        label.textContent = '';
+        return;
+      }
+
+      var i = 0;
+      var slideW = 0;
+      dotsWrap.innerHTML = '';
+      var dotEls = [];
+      for (var d = 0; d < n; d++) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Go to slide ' + (d + 1));
+        dotsWrap.appendChild(b);
+        dotEls.push(b);
+      }
+
+      function syncDots() {
+        for (var j = 0; j < dotEls.length; j++) {
+          dotEls[j].classList.toggle('is-active', j === i);
+        }
+      }
+
+      function syncLabel() {
+        label.textContent = prefixes[i] != null ? String(prefixes[i]) : '';
+      }
+
+      function layout() {
+        var W = viewport.offsetWidth;
+        if (W <= 0) return;
+        slideW = W;
+        slides.forEach(function (el) {
+          el.style.flexBasis = slideW + 'px';
+          el.style.width = slideW + 'px';
+          el.style.minWidth = slideW + 'px';
+        });
+        applyTransform();
+      }
+
+      function applyTransform() {
+        if (slideW <= 0) return;
+        track.style.transform = 'translateX(' + (-i * slideW) + 'px)';
+        syncDots();
+        syncLabel();
+      }
+
+      function goTo(idx) {
+        i = idx;
+        applyTransform();
+      }
+
+      prevBtn.addEventListener('click', function () {
+        goTo((i - 1 + n) % n);
+      });
+      nextBtn.addEventListener('click', function () {
+        goTo((i + 1) % n);
+      });
+      dotEls.forEach(function (btn, idx) {
+        btn.addEventListener('click', function () {
+          goTo(idx);
+        });
+      });
+
+      window.addEventListener('resize', layout);
+      if (typeof ResizeObserver !== 'undefined') {
+        var ro = new ResizeObserver(function () {
+          layout();
+        });
+        ro.observe(viewport);
+      }
+      layout();
+    }
+
+    fetch(manifestUrl)
+      .then(function (r) {
+        return r.ok ? r.json() : Promise.reject(new Error('bad manifest'));
+      })
+      .then(function (list) {
+        if (!Array.isArray(list) || !list.length) throw new Error('empty manifest');
+        return list;
+      })
+      .catch(function () {
+        return DEFAULT_OOV_WEBPS;
+      })
+      .then(function (files) {
+        var prefixes = buildSlides(files);
+        if (!prefixes.length) {
+          label.textContent = '';
+          return;
+        }
+        runBindings(prefixes);
+      });
+  }
+
+  document.querySelectorAll('[data-oov-carousel]').forEach(setupOovCarousel);
+
+  var DEFAULT_STROKE_PNGS = [
+    'stroke_1.png',
+    'stroke_2.png',
+    'stroke_3.png',
+    'stroke_4.png'
+  ];
+
+  function strokeLabelFromFilename(name) {
+    return String(name).replace(/\.png$/i, '').split('/').pop();
+  }
+
+  function setupStrokeCarousel(root) {
+    var viewport = root.querySelector('.oov-carousel-viewport');
+    var track = root.querySelector('.oov-carousel-track');
+    var prevBtn = root.querySelector('.oov-carousel-prev');
+    var nextBtn = root.querySelector('.oov-carousel-next');
+    var dotsWrap = root.querySelector('.oov-carousel-dots');
+    var label = root.querySelector('.oov-carousel-label');
+    if (!viewport || !track || !prevBtn || !nextBtn || !dotsWrap || !label) return;
+
+    var manifestUrl = root.getAttribute('data-stroke-manifest') || 'static/images/stroke_manifest.json';
+    var base = (root.getAttribute('data-stroke-base') || 'static/images/').replace(/\/?$/, '/');
+
+    function buildSlides(files) {
+      track.innerHTML = '';
+      var names = files.filter(function (f) {
+        return typeof f === 'string' && /\.png$/i.test(f.trim());
+      });
+      var prefixes = [];
+      names.forEach(function (name) {
+        name = name.trim();
+        var slide = document.createElement('div');
+        slide.className = 'oov-slide';
+        var wrap = document.createElement('div');
+        wrap.className = 'oov-slide-img-wrap';
+        var img = document.createElement('img');
+        img.src = oovImageUrl(base, name);
+        img.alt = '';
+        wrap.appendChild(img);
+        slide.appendChild(wrap);
+        track.appendChild(slide);
+        prefixes.push(strokeLabelFromFilename(name));
+      });
+      return prefixes;
+    }
+
+    function runBindings(prefixes) {
+      var slides = track.querySelectorAll('.oov-slide');
+      var n = slides.length;
+      if (!n) {
+        label.textContent = '';
+        return;
+      }
+
+      var i = 0;
+      var slideW = 0;
+      dotsWrap.innerHTML = '';
+      var dotEls = [];
+      for (var d = 0; d < n; d++) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Go to slide ' + (d + 1));
+        dotsWrap.appendChild(b);
+        dotEls.push(b);
+      }
+
+      function syncDots() {
+        for (var j = 0; j < dotEls.length; j++) {
+          dotEls[j].classList.toggle('is-active', j === i);
+        }
+      }
+
+      function syncLabel() {
+        label.textContent = prefixes[i] != null ? String(prefixes[i]) : '';
+      }
+
+      function layout() {
+        var W = viewport.offsetWidth;
+        if (W <= 0) return;
+        slideW = W;
+        slides.forEach(function (el) {
+          el.style.flexBasis = slideW + 'px';
+          el.style.width = slideW + 'px';
+          el.style.minWidth = slideW + 'px';
+        });
+        applyTransform();
+      }
+
+      function applyTransform() {
+        if (slideW <= 0) return;
+        track.style.transform = 'translateX(' + (-i * slideW) + 'px)';
+        syncDots();
+        syncLabel();
+      }
+
+      function goTo(idx) {
+        i = idx;
+        applyTransform();
+      }
+
+      prevBtn.addEventListener('click', function () {
+        goTo((i - 1 + n) % n);
+      });
+      nextBtn.addEventListener('click', function () {
+        goTo((i + 1) % n);
+      });
+      dotEls.forEach(function (btn, idx) {
+        btn.addEventListener('click', function () {
+          goTo(idx);
+        });
+      });
+
+      window.addEventListener('resize', layout);
+      if (typeof ResizeObserver !== 'undefined') {
+        var ro = new ResizeObserver(function () {
+          layout();
+        });
+        ro.observe(viewport);
+      }
+      layout();
+    }
+
+    fetch(manifestUrl)
+      .then(function (r) {
+        return r.ok ? r.json() : Promise.reject(new Error('bad manifest'));
+      })
+      .then(function (list) {
+        if (!Array.isArray(list) || !list.length) throw new Error('empty manifest');
+        return list;
+      })
+      .catch(function () {
+        return DEFAULT_STROKE_PNGS;
+      })
+      .then(function (files) {
+        var prefixes = buildSlides(files);
+        if (!prefixes.length) {
+          label.textContent = '';
+          return;
+        }
+        runBindings(prefixes);
+      });
+  }
+
+  document.querySelectorAll('[data-stroke-carousel]').forEach(setupStrokeCarousel);
+})();
+</script>
+
+</body>
+</html>
