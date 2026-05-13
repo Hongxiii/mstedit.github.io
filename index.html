@@ -280,19 +280,14 @@
       <div class="column is-half">
         <div class="content has-text-left is-size-12">
           <p>
-            Scene text editing aims to modify text in a target region of an image while preserving surrounding background style and texture.
-            Existing methods rely solely on image background information while neglecting the visual details of target regions,
-            which discards stylistic features in the original text and essentially degrades the task to text rendering.
-            Moreover, the conditions imposed by pre-trained glyph encoder limit the scope of editable text.
-            To address these issues, this paper proposes a self-prompting scene text editing method that constructs style and glyph prompts directly from the original image, without introducing additional style or glyph encoders.
-            We employ a two-stage training strategy: the diffusion transformer is first trained on large-scale self-supervised data and then refined using a small set of paired images.
-            By leveraging the in-context learning capability of the Multi-Modal Diffusion Transformer (MM-DiT), it achieves open-vocabulary and style-consistent text editing.
-            Experimental results on various languages demonstrate that our method achieves the state-of-the-art performance in both text accuracy and style consistency.
+            Scene text editing aims to modify text inside images while keeping the edited results natural and visually consistent. However, existing methods often fail to preserve the original text’s style and are usually limited to a fixed set of words or languages.
+            <br><br>We propose a self-prompting text editing method that learns directly from the original image, without requiring additional text encoders. By leveraging the contextual learning ability of modern generative models, our method can edit previously unseen text while preserving the original visual style.
+            <br><br>Our approach supports open-vocabulary multilingual editing across languages such as Chinese, English, Japanese, Korean, Russian, and Thai. Experiments show that it produces more accurate and realistic editing results than existing methods.
           </p>
         </div>
       </div>
       <div class="column is-half has-text-centered">
-        <img src="images/introduction.png" alt="Introduction overview" style="max-width: 70%; height: auto;">
+        <img src="images/introduction.png" alt="Introduction overview" style="max-width: 65%; height: auto;">
       </div>
     </div>
   </div>
